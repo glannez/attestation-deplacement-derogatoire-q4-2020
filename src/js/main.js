@@ -10,6 +10,12 @@ import { addVersion } from './util'
 import { createForm } from './form'
 
 warnFacebookBrowserUserIfNecessary()
-createForm()
-prepareForm()
+const person = prompt('Qui es tu? (guillaume, mathilde)', 'guillaume')
+if (person != null) {
+  const reason = prompt('Quel est ta raison? (achats, sante, famille, sport_animaux, enfants)', 'enfants')
+  if (reason != null) {
+    createForm(person, reason)
+    prepareForm()
+  }
+}
 addVersion(process.env.VERSION)

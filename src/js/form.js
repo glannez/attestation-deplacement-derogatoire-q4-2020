@@ -4,6 +4,8 @@ import '../css/main.css'
 
 import formData from '../form-data.json'
 
+import userData from '../userData/userData.json'
+
 import { $, appendTo, createElement } from './dom-utils'
 
 const createTitle = () => {
@@ -14,8 +16,8 @@ const createTitle = () => {
 // createElement('div', { className: 'form-group' })
 
 const getCurrentTime = () => {
-  const date = new Date();
-  return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const date = new Date()
+  return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
 }
 
 const createFormGroup = ({
@@ -31,6 +33,7 @@ const createFormGroup = ({
   pattern,
   placeholder = '',
   type = 'text',
+  value,
 }) => {
   const formGroup = createElement('div', { className: 'form-group' })
   const labelAttrs = {
@@ -62,6 +65,8 @@ const createFormGroup = ({
 
   if (name === 'heuresortie') {
     input.value = getCurrentTime()
+  } else {
+    input.value = value
   }
 
   const validityAttrs = {
@@ -80,7 +85,7 @@ const createFormGroup = ({
   return formGroup
 }
 
-const createReasonField = (reasonData) => {
+const createReasonField = (reasonData, userReason) => {
   const formReasonAttrs = { className: 'form-checkbox align-items-center' }
   const formReason = createElement('div', formReasonAttrs)
   const appendToReason = appendTo(formReason)
@@ -92,6 +97,7 @@ const createReasonField = (reasonData) => {
     id,
     name: 'field-reason',
     value: reasonData.code,
+    checked: reasonData.code === userReason,
   }
   const inputReason = createElement('input', inputReasonAttrs)
 
@@ -102,7 +108,7 @@ const createReasonField = (reasonData) => {
   return formReason
 }
 
-const createReasonFieldset = (reasonsData) => {
+const createReasonFieldset = (reasonsData, userReason) => {
   const fieldsetAttrs = {
     id: 'reason-fieldset',
     className: 'fieldset',
@@ -126,14 +132,14 @@ const createReasonFieldset = (reasonsData) => {
 
   const textSubscribeReason = createElement('p', textSubscribeReasonAttrs)
 
-  const reasonsFields = reasonsData.items.map(createReasonField)
+  const reasonsFields = reasonsData.items.map(function (reasonData) { return createReasonField(reasonData, userReason) })
 
   appendToFieldset([legend, textAlert, textSubscribeReason, ...reasonsFields])
   // Créer un form-checkbox par motif
   return fieldset
 }
 
-export function createForm () {
+export function createForm (user, userReason) {
   const form = $('#form-profile')
   // Évite de recréer le formulaire s'il est déjà créé par react-snap (ou un autre outil de prerender)
   if (form.innerHTML !== '') {
@@ -149,9 +155,10 @@ export function createForm () {
     .map((field,
       index) => {
       const formGroup = createFormGroup({
-        autofocus: index === 0,
+        autofocus: field.key === 'heuresortie',
         ...field,
         name: field.key,
+        value: userData[user][field.key] !== undefined ? userData[user][field.key] : 'toto',
       })
 
       return formGroup
@@ -161,6 +168,6 @@ export function createForm () {
     .flat(1)
     .find(field => field.key === 'reason')
 
-  const reasonFieldset = createReasonFieldset(reasonsData)
+  const reasonFieldset = createReasonFieldset(reasonsData, userReason)
   appendToForm([...createTitle(), ...formFirstPart, reasonFieldset])
 }

@@ -24,8 +24,9 @@ npm run build:dev
 #### Tester le code de production en local
 
 ```console
-npx serve dist
+npx serve dist -n
 ```
+-n to avoid Clipboard error : https://stackoverflow.com/questions/55760655/reactjs-deploy-app-error-cannot-copy-to-clipboard-command-failed-xsel-clipbo
 
 Et visiter http://localhost:5000
 

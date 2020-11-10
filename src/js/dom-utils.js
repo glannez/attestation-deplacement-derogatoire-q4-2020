@@ -9,6 +9,7 @@ const plainAttributes = [
   'min',
   'max',
   'pattern',
+  'hidden',
 ]
 
 export const createElement = (tag, attrs) => {
